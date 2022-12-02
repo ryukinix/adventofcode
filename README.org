@@ -1,0 +1,20 @@
+#+AUTHOR: Manoel Vilela
+
+* AdventOfCode
+
+My solutions of adventofcode written in Go, as exercise to learn the
+language starting from 2022.
+
+* How to run it
+
+You can use the Makefile as interface to run each solution as follow:
+
+#+begin_src shell-script
+make day01
+#+end_src
+
+Where day01 can by any of day from day01 to day25.
+
+* License
+
+BSD-2
