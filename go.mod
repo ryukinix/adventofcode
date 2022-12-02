@@ -1,3 +1,3 @@
-module github.com/ryukinix/adventofcode/2022/day01
+module github.com/ryukinix/adventofcode
 
 go 1.18

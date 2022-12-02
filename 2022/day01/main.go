@@ -6,8 +6,12 @@ package main
 
 import (
 	"fmt"
+
+	lib "github.com/ryukinix/adventofcode/2022/lib"
+	"github.com/ryukinix/adventofcode/lerax"
 )
 
 func main() {
-	fmt.Println("Hello World!")
+	calories := lib.CalculateTotalCaloriesByElf(lib.LoadCaloriesByElf("input.txt"))
+	fmt.Println(lerax.MaxArray(calories))
 }
