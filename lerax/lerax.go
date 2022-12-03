@@ -1,9 +1,14 @@
+// Copyright 2022 to ryukinix. All rights reserved
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package lerax
 
 import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 )
 
@@ -77,4 +82,44 @@ func CalculateTotalOfEachGroup(groupedLines [][]string) []int {
 		result = append(result, SumArray(numbers))
 	}
 	return result
+}
+
+// SplitInTheMiddle splits a string in two equal parts
+// ex: SplitInTheMiddle("aaabbb") -> "aaa", "bbb"
+func SplitInTheMiddle(s string) (string, string) {
+	m := len(s) / 2
+	s1 := s[:m]
+	s2 := s[m:]
+	return s1, s2
+}
+
+func SortString(s string) string {
+	charArray := []rune(s)
+	sort.Slice(charArray, func(i int, j int) bool {
+		return charArray[i] < charArray[j]
+	})
+	return string(charArray)
+}
+
+func Intersection(s1, s2 string) string {
+	// FIXME: final result contains duplicates
+	var result []rune
+	s1 = SortString(s1)
+	s2 = SortString(s2)
+
+	s2_pointer := 0
+	for _, rune1 := range s1 {
+		for s2_pointer < len(s2) {
+			rune2 := rune(s2[s2_pointer])
+			if rune1 == rune2 {
+				result = append(result, rune1)
+				s2_pointer++
+				break
+			} else if rune2 > rune1 {
+				break
+			}
+			s2_pointer++
+		}
+	}
+	return string(result)
 }
