@@ -20,55 +20,55 @@ const (
 	Scissors      = 3
 )
 
-type Winner int
+type GameStatus int
 
 const (
-	First  Winner = 0
-	Second        = 6
-	Draw          = 3
+	Lose    GameStatus = 0
+	Victory            = 6
+	Draw               = 3
 )
 
 type Rule struct {
-	hand1 Hand
-	hand2 Hand
-	win   Winner
+	hand1  Hand
+	hand2  Hand
+	status GameStatus
 }
 
 var rules []Rule = []Rule{
 	{
-		hand1: Scissors,
-		hand2: Rock,
-		win:   Second,
+		hand1:  Scissors,
+		hand2:  Rock,
+		status: Victory,
 	},
 
 	{
-		hand1: Scissors,
-		hand2: Paper,
-		win:   First,
+		hand1:  Scissors,
+		hand2:  Paper,
+		status: Lose,
 	},
 
 	{
-		hand1: Paper,
-		hand2: Rock,
-		win:   First,
+		hand1:  Paper,
+		hand2:  Rock,
+		status: Lose,
 	},
 
 	{
-		hand1: Paper,
-		hand2: Scissors,
-		win:   Second,
+		hand1:  Paper,
+		hand2:  Scissors,
+		status: Victory,
 	},
 
 	{
-		hand1: Rock,
-		hand2: Scissors,
-		win:   First,
+		hand1:  Rock,
+		hand2:  Scissors,
+		status: Lose,
 	},
 
 	{
-		hand1: Rock,
-		hand2: Paper,
-		win:   Second,
+		hand1:  Rock,
+		hand2:  Paper,
+		status: Victory,
 	},
 }
 
@@ -92,9 +92,9 @@ func (r Rule) apply(a, b Hand) Rule {
 		}
 	}
 	return Rule{
-		hand1: a,
-		hand2: b,
-		win:   Draw,
+		hand1:  a,
+		hand2:  b,
+		status: Draw,
 	}
 }
 
@@ -103,54 +103,66 @@ func (r *Rule) equal(a, b Hand) bool {
 }
 
 func (r *Rule) score() int {
-	return int(r.hand2) + int(r.win)
+	return int(r.hand2) + int(r.status)
 }
 
-func (r *Rule) part2ValidGame() bool {
-	switch r.hand2 {
-	case Rock:
-		return r.win == First
-	case Paper:
-		return r.win == Draw
-	case Scissors:
-		return r.win == Second
+func selectBestHand(hand Hand, status GameStatus) Hand {
+	var bestHands = map[GameStatus]map[Hand]Hand{
+		Draw: {
+			Rock:     Rock,
+			Scissors: Scissors,
+			Paper:    Paper,
+		},
+		Lose: {
+			Rock:     Scissors,
+			Scissors: Paper,
+			Paper:    Rock,
+		},
+		Victory: {
+			Rock:     Paper,
+			Scissors: Rock,
+			Paper:    Scissors,
+		},
 	}
-	panic("oh no!")
+	return bestHands[status][hand]
 }
 
 func (r Rule) part2TransformGame() Rule {
 	switch r.hand2 {
 	case Rock:
-		r.win = First
+		r.status = Lose
 	case Paper:
-		r.win = Draw
+		r.status = Draw
 	case Scissors:
-		r.win = Second
+		r.status = Victory
 	}
+	r.hand2 = selectBestHand(r.hand1, r.status)
 	return r
 }
 
 func eval(games []string, part2 bool) int {
 	score := 0
 	hand := new(Hand)
-	r := new(Rule)
 	for _, game := range games {
 		// fmt.Println("game: ", game)
 		players := strings.Split(game, " ")
 		p1, p2 := players[0], players[1]
 		a, b := hand.fromString(p1), hand.fromString(p2)
 		// fmt.Printf("Translate: %v, %v\n", a, b)
-		rule := r.apply(a, b)
-		if part2 {
-			if !rule.part2ValidGame() {
-				rule = rule.part2TransformGame()
-			}
+		rule := Rule{
+			hand1: a,
+			hand2: b,
 		}
-		// fmt.Println("Winner: ", rule.win)
-		new_score := rule.score()
+		if part2 {
+			rule = rule.part2TransformGame()
+		} else {
+			rule = rule.apply(a, b)
+		}
+		// fmt.Println("GameStatus: ", rule.status)
+		newScore := rule.score()
 		// fmt.Printf("Score: %v\n", new_score)
 		// fmt.Println()
-		score = score + new_score
+		score = score + newScore
 	}
 	return score
 }
