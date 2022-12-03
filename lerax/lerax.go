@@ -1,7 +1,10 @@
 package lerax
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strconv"
 )
 
 // ErrCheck check if is not nil and print it.
@@ -30,4 +33,48 @@ func SumArray(array []int) int {
 		sum = sum + e
 	}
 	return sum
+}
+
+func LoadLinesGrouped(readFile *os.File) [][]string {
+	var lineGroups [][]string = [][]string{{}}
+
+	lineIndex := 0
+	for _, line := range LoadLines(readFile) {
+		if line == "" {
+			lineIndex++
+			lineGroups = append(lineGroups, []string{})
+			continue
+		}
+
+		lineGroups[lineIndex] = append(lineGroups[lineIndex], line)
+	}
+
+	return lineGroups
+}
+
+func LoadLines(readFile *os.File) []string {
+	fileScanner := bufio.NewScanner(readFile)
+	fileScanner.Split(bufio.ScanLines)
+	var fileLines []string
+
+	for fileScanner.Scan() {
+		line := fileScanner.Text()
+		fileLines = append(fileLines, line)
+	}
+
+	return fileLines
+}
+
+func CalculateTotalOfEachGroup(groupedLines [][]string) []int {
+	var result []int
+	for _, group := range groupedLines {
+		var numbers []int
+		for _, item := range group {
+			item, err := strconv.Atoi(item)
+			ErrCheck(err)
+			numbers = append(numbers, item)
+		}
+		result = append(result, SumArray(numbers))
+	}
+	return result
 }

@@ -6,12 +6,32 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"sort"
 
-	lib "github.com/ryukinix/adventofcode/2022/lib"
 	"github.com/ryukinix/adventofcode/lerax"
 )
 
-func main() {
-	calories := lib.CalculateTotalCaloriesByElf(lib.LoadCaloriesByElf("input.txt"))
+func part1(calories []int) {
 	fmt.Println(lerax.MaxArray(calories))
+}
+
+func part2(calories []int) {
+	sort.Slice(calories, func(a, b int) bool {
+		return calories[a] > calories[b]
+	})
+	result := calories[0] + calories[1] + calories[2]
+	fmt.Println(result)
+}
+
+func main() {
+	readFile, err := os.Open("input.txt")
+	lerax.ErrCheck(err)
+	defer func() {
+		lerax.ErrCheck(readFile.Close())
+	}()
+
+	calories := lerax.CalculateTotalOfEachGroup(lerax.LoadLinesGrouped(readFile))
+	part1(calories)
+	part2(calories)
 }
