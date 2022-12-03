@@ -106,7 +106,31 @@ func (r *Rule) score() int {
 	return int(r.hand2) + int(r.win)
 }
 
-func eval(games []string) int {
+func (r *Rule) part2ValidGame() bool {
+	switch r.hand2 {
+	case Rock:
+		return r.win == First
+	case Paper:
+		return r.win == Draw
+	case Scissors:
+		return r.win == Second
+	}
+	panic("oh no!")
+}
+
+func (r Rule) part2TransformGame() Rule {
+	switch r.hand2 {
+	case Rock:
+		r.win = First
+	case Paper:
+		r.win = Draw
+	case Scissors:
+		r.win = Second
+	}
+	return r
+}
+
+func eval(games []string, part2 bool) int {
 	score := 0
 	hand := new(Hand)
 	r := new(Rule)
@@ -117,6 +141,11 @@ func eval(games []string) int {
 		a, b := hand.fromString(p1), hand.fromString(p2)
 		// fmt.Printf("Translate: %v, %v\n", a, b)
 		rule := r.apply(a, b)
+		if part2 {
+			if !rule.part2ValidGame() {
+				rule = rule.part2TransformGame()
+			}
+		}
 		// fmt.Println("Winner: ", rule.win)
 		new_score := rule.score()
 		// fmt.Printf("Score: %v\n", new_score)
@@ -138,5 +167,8 @@ func main() {
 		lerax.ErrCheck(readFile.Close())
 	}()
 	games := lerax.LoadLines(readFile)
-	fmt.Println(eval(games))
+	// part1
+	fmt.Println(eval(games, false))
+	// part2
+	fmt.Println(eval(games, true))
 }
