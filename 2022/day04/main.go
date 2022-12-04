@@ -9,16 +9,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ryukinix/adventofcode/lerax"
+	"github./ryukinix/adventofcode/lerax"
 )
 
-func resolvePart1(pairs []string) int {
+type fnOverlaps func(lerax.Range, lerax.Range) bool
+
+func resolve(pairs []string, overlaps fnOverlaps) int {
 	overlapping := 0
 	for _, pair := range pairs {
 		assignments := strings.Split(pair, ",")
 		r1 := lerax.ParseRange(assignments[0])
 		r2 := lerax.ParseRange(assignments[1])
-		if r1.Overlaps(r2) {
+		if overlaps(r1, r2) {
 			overlapping++
 		}
 	}
@@ -33,5 +35,8 @@ func main() {
 	}()
 
 	pairs := lerax.LoadLines(readFile)
-	fmt.Println(resolvePart1(pairs))
+	// part1
+	fmt.Println(resolve(pairs, lerax.Range.Overlaps))
+	// part2
+	fmt.Println(resolve(pairs, lerax.Range.OverlapsPartial))
 }

@@ -96,3 +96,21 @@ func TestRangeOverlapsFalse(t *testing.T) {
 		t.Errorf("Expected %v, got: %v", expected, got)
 	}
 }
+
+func TestRangeOverlapsPartialTrue(t *testing.T) {
+	r1, r2 := NewRange(5, 7), NewRange(3, 5)
+	got := r1.OverlapsPartial(r2)
+	expected := true
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected %v, got: %v", expected, got)
+	}
+}
+
+func TestRangeOverlapsPartialFalse(t *testing.T) {
+	r1, r2 := NewRange(2, 4), NewRange(5, 7)
+	got := r1.OverlapsPartial(r2)
+	expected := false
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected %v, got: %v", expected, got)
+	}
+}

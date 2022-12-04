@@ -36,8 +36,14 @@ func (r Range) Contains(r2 Range) bool {
 	return r.min <= r2.min && r.max >= r2.max
 }
 
+// Overlaps check if two ranges overlaps totally in some way
 func (r Range) Overlaps(r2 Range) bool {
 	return r.Contains(r2) || r2.Contains(r)
+}
+
+// OverlapsPartial check if two ranges overlaps at least partially
+func (r Range) OverlapsPartial(r2 Range) bool {
+	return r.min <= r2.max && r2.min <= r.max
 }
 
 // ErrCheck check if is not nil and print it.
