@@ -28,8 +28,8 @@
 (defun main ()
   (let ((pairs (uiop:read-file-lines "input.txt")))
     ;; part1
-    (print (resolve pairs #'overlaps))
+    (format t "~S~%" (resolve pairs #'overlaps))
     ;; part2
-    (print (resolve pairs #'overlaps-partial))))
+    (format t "~S~%" (resolve pairs #'overlaps-partial))))
 
 (main)
