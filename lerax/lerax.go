@@ -85,6 +85,7 @@ func CalculateTotalOfEachGroup(groupedLines [][]string) []int {
 }
 
 // SplitInTheMiddle splits a string in two equal parts
+//
 // ex: SplitInTheMiddle("aaabbb") -> "aaa", "bbb"
 func SplitInTheMiddle(s string) (string, string) {
 	m := len(s) / 2
@@ -102,6 +103,7 @@ func SortString(s string) string {
 }
 
 // Intersection returns the common elements of two strings
+//
 // Complexity time: O(n * log(n)) (i think)
 func Intersection(s1, s2 string) string {
 	var result []rune
