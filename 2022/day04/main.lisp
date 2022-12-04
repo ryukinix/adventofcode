@@ -23,12 +23,13 @@
 (defun resolve (pairs overlapfn)
   (loop with ranges = (mapcar #'parse-pair pairs)
         for range in ranges
-        when (apply overlapfn range)
-          counting 1))
+        counting (apply overlapfn range)))
 
 (defun main ()
   (let ((pairs (uiop:read-file-lines "input.txt")))
+    ;; part1
     (print (resolve pairs #'overlaps))
+    ;; part2
     (print (resolve pairs #'overlaps-partial))))
 
 (main)
