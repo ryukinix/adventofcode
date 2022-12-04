@@ -36,6 +36,20 @@ func resolvePart1(rucksacks []string) int {
 	}
 	return result
 }
+func resolvePart2(rucksacks []string) int {
+	result := 0
+	groups := lerax.GroupLinesByWindow(rucksacks, 3)
+	for _, g := range groups {
+		e1, e2, e3 := g[0], g[1], g[2]
+		r := lerax.Intersection(
+			lerax.Intersection(e1, e2),
+			lerax.Intersection(e2, e3),
+		)
+		result = result + getPriority(rune(r[0]))
+
+	}
+	return result
+}
 
 func main() {
 	readFile, err := os.Open("input.txt")
@@ -46,4 +60,5 @@ func main() {
 
 	rucksacks := lerax.LoadLines(readFile)
 	fmt.Println("Result part1: ", resolvePart1(rucksacks))
+	fmt.Println("Result part2: ", resolvePart2(rucksacks))
 }

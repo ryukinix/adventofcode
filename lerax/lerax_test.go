@@ -1,6 +1,7 @@
 package lerax
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -55,5 +56,13 @@ func TestSplitInTheMiddleBasic(t *testing.T) {
 	got1, got2 := SplitInTheMiddle("asdfasdf")
 	if got1 != got2 {
 		t.Errorf("Expected to be equal, got: %q and %q", got1, got2)
+	}
+}
+
+func TestGroupLinesByWindow(t *testing.T) {
+	got := GroupLinesByWindow([]string{"a", "b", "c", "d"}, 2)
+	expected := [][]string{{"a", "b"}, {"c", "d"}}
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("Expected %q, got: %q", expected, got)
 	}
 }

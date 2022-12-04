@@ -40,6 +40,20 @@ func SumArray(array []int) int {
 	return sum
 }
 
+// GroupLinesByWindow create successive groups by window
+func GroupLinesByWindow(lines []string, window int) [][]string {
+	var groups [][]string
+	max := len(lines)
+	for i := 0; i < max && i+window <= max; i = i + window {
+		var group []string
+		for j := i; j < i+window; j++ {
+			group = append(group, lines[j])
+		}
+		groups = append(groups, group)
+	}
+	return groups
+}
+
 func LoadLinesGrouped(readFile *os.File) [][]string {
 	var lineGroups [][]string = [][]string{{}}
 
