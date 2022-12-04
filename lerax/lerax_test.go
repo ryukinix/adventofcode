@@ -37,7 +37,7 @@ func TestIntersectionStringsDifferentSize(t *testing.T) {
 }
 
 func TestIntersectionUniqueResult(t *testing.T) {
-	t.Skip("I'm done with this, my intersection function is a piece of shit")
+	//t.Skip("I'm done with this, my intersection function is a piece of shit")
 	got := Intersection("ZTmtZvZLTFNLMQMNRvZ", "ncdcHwcScJvcdHnVfwV")
 	expected := "v"
 	if got != expected {

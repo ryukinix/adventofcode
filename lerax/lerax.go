@@ -101,9 +101,12 @@ func SortString(s string) string {
 	return string(charArray)
 }
 
+// Intersection returns the common elements of two strings
+// Complexity time: O(n * log(n)) (i think)
 func Intersection(s1, s2 string) string {
-	// FIXME: final result contains duplicates
 	var result []rune
+	var lastResult rune
+
 	s1 = SortString(s1)
 	s2 = SortString(s2)
 
@@ -112,11 +115,15 @@ func Intersection(s1, s2 string) string {
 		for s2_pointer < len(s2) {
 			rune2 := rune(s2[s2_pointer])
 			if rune1 == rune2 {
-				result = append(result, rune1)
+				// Don't append repeated Results
+				if rune1 != lastResult {
+					lastResult = rune1
+					result = append(result, rune1)
+				}
 				s2_pointer++
 				break
 			} else if rune2 > rune1 {
-				break
+				break // it's sorted, so there is no reason to check from here
 			}
 			s2_pointer++
 		}
