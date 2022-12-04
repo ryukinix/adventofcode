@@ -1,5 +1,10 @@
 #+AUTHOR: Manoel Vilela
 
+[[https://opensource.org/licenses/BSD-2-Clause][https://img.shields.io/badge/License-BSD_2--Clause-orange.svg]]
+[[https://pkg.go.dev/github.com/ryukinix/adventofcode/lerax][https://pkg.go.dev/badge/github.com/ryukinix/adventofcode/lerax.svg]]
+[[ci-status][https://github.com/ryukinix/adventofcode/actions/workflows/test.yml/badge.svg]]
+
+
 * AdventOfCode
 
 My solutions of adventofcode written in Go, as exercise to learn the
