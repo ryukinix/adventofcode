@@ -10,13 +10,41 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
+
+type Range struct {
+	min int
+	max int
+}
+
+func NewRange(min, max int) Range {
+	return Range{min: min, max: max}
+}
+
+// ParseRange parses string string like 1-10 to a Range struct
+func ParseRange(s string) Range {
+	minmax := strings.Split(s, "-")
+	min, err1 := strconv.Atoi(minmax[0])
+	max, err2 := strconv.Atoi(minmax[1])
+	ErrCheck(err1)
+	ErrCheck(err2)
+	return NewRange(min, max)
+}
+
+func (r Range) Contains(r2 Range) bool {
+	return r.min <= r2.min && r.max >= r2.max
+}
+
+func (r Range) Overlaps(r2 Range) bool {
+	return r.Contains(r2) || r2.Contains(r)
+}
 
 // ErrCheck check if is not nil and print it.
 // otherwise, does nothing.
 func ErrCheck(err error) {
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 	}
 }
 
