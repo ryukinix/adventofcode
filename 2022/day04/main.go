@@ -9,7 +9,7 @@ import (
 	"os"
 	"strings"
 
-	"github./ryukinix/adventofcode/lerax"
+	"github.com/ryukinix/adventofcode/lerax"
 )
 
 type fnOverlaps func(lerax.Range, lerax.Range) bool
