@@ -27,9 +27,7 @@ func part2(calories []int) {
 func main() {
 	readFile, err := os.Open("input.txt")
 	lerax.ErrCheck(err)
-	defer func() {
-		lerax.ErrCheck(readFile.Close())
-	}()
+	defer readFile.Close()
 
 	calories := lerax.CalculateTotalOfEachGroup(lerax.LoadLinesGrouped(readFile))
 	part1(calories)

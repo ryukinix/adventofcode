@@ -54,9 +54,7 @@ func resolvePart2(rucksacks []string) int {
 func main() {
 	readFile, err := os.Open("input.txt")
 	lerax.ErrCheck(err)
-	defer func() {
-		lerax.ErrCheck(readFile.Close())
-	}()
+	defer readFile.Close()
 
 	rucksacks := lerax.LoadLines(readFile)
 	fmt.Println("Result part1: ", resolvePart1(rucksacks))

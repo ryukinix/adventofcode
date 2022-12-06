@@ -175,9 +175,8 @@ func (h Hand) String() string {
 func main() {
 	readFile, err := os.Open("input.txt")
 	lerax.ErrCheck(err)
-	defer func() {
-		lerax.ErrCheck(readFile.Close())
-	}()
+	defer readFile.Close()
+
 	games := lerax.LoadLines(readFile)
 	// part1
 	fmt.Println(eval(games, false))

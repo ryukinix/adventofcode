@@ -30,9 +30,7 @@ func resolve(pairs []string, overlaps fnOverlaps) int {
 func main() {
 	readFile, err := os.Open("input.txt")
 	lerax.ErrCheck(err)
-	defer func() {
-		lerax.ErrCheck(readFile.Close())
-	}()
+	defer readFile.Close()
 
 	pairs := lerax.LoadLines(readFile)
 	// part1
