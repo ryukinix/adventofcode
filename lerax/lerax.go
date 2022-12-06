@@ -7,46 +7,13 @@ package lerax
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
-	"strings"
 )
 
-type Range struct {
-	min int
-	max int
-}
-
-func NewRange(min, max int) Range {
-	return Range{min: min, max: max}
-}
-
-// ParseRange parses string string like 1-10 to a Range struct
-func ParseRange(s string) Range {
-	minmax := strings.Split(s, "-")
-	min, err1 := strconv.Atoi(minmax[0])
-	max, err2 := strconv.Atoi(minmax[1])
-	ErrCheck(err1)
-	ErrCheck(err2)
-	return NewRange(min, max)
-}
-
-func (r Range) Contains(r2 Range) bool {
-	return r.min <= r2.min && r.max >= r2.max
-}
-
-// Overlaps check if two ranges overlaps totally in some way
-func (r Range) Overlaps(r2 Range) bool {
-	return r.Contains(r2) || r2.Contains(r)
-}
-
-// OverlapsPartial check if two ranges overlaps at least partially
-func (r Range) OverlapsPartial(r2 Range) bool {
-	return r.min <= r2.max && r2.min <= r.max
-}
-
-// ErrCheck check if is not nil and print it.
+// ErrCheck check if is not nil and print it
 // otherwise, does nothing.
 func ErrCheck(err error) {
 	if err != nil {
@@ -54,7 +21,7 @@ func ErrCheck(err error) {
 	}
 }
 
-// MaxArray calculate the max value of atn array (slice)
+// MaxArray calculate the max value of atn array (slice).
 func MaxArray(array []int) int {
 	var m int
 	for i, e := range array {
@@ -65,7 +32,7 @@ func MaxArray(array []int) int {
 	return m
 }
 
-// SumArray sum the values of an array
+// SumArray sum the values of an array.
 func SumArray(array []int) int {
 	sum := 0
 	for _, e := range array {
@@ -74,7 +41,7 @@ func SumArray(array []int) int {
 	return sum
 }
 
-// GroupLinesByWindow create successive groups by window
+// GroupLinesByWindow create successive groups by window.
 func GroupLinesByWindow(lines []string, window int) [][]string {
 	var groups [][]string
 	max := len(lines)
@@ -118,6 +85,16 @@ func LoadLines(readFile *os.File) []string {
 	return fileLines
 }
 
+func ReadFileText(inputFile string) string {
+	file, err := ioutil.ReadFile(inputFile)
+	if err != nil {
+		fmt.Printf("Could not read the file due to this %s error \n", err)
+	}
+	// convert the file binary into a string using string
+	fileContent := string(file)
+	return fileContent
+}
+
 func CalculateTotalOfEachGroup(groupedLines [][]string) []int {
 	var result []int
 	for _, group := range groupedLines {
@@ -132,7 +109,7 @@ func CalculateTotalOfEachGroup(groupedLines [][]string) []int {
 	return result
 }
 
-// SplitInTheMiddle splits a string in two equal parts
+// SplitInTheMiddle splits a string in two equal parts.
 //
 // ex: SplitInTheMiddle("aaabbb") -> "aaa", "bbb"
 func SplitInTheMiddle(s string) (string, string) {
@@ -150,7 +127,8 @@ func SortString(s string) string {
 	return string(charArray)
 }
 
-// Intersection returns the common elements of two strings
+// Intersection returns the common elements of two strings.
+//
 //
 // Complexity time: O(n * log(n)) (i think)
 func Intersection(s1, s2 string) string {
@@ -179,4 +157,9 @@ func Intersection(s1, s2 string) string {
 		}
 	}
 	return string(result)
+}
+
+// UniqueChars verify if the string s doesn't have any char repeated.
+func UniqueChars(s string) bool {
+	return len(s) == len(Intersection(s, s))
 }

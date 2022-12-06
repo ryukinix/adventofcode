@@ -56,6 +56,20 @@ func TestIntersectionUniqueResult(t *testing.T) {
 	}
 }
 
+func TestUniqueChars(t *testing.T) {
+	got := UniqueChars("asdf")
+	expected := true
+	if got != expected {
+		t.Errorf("Expected %v, got: %v", expected, got)
+	}
+
+	got = UniqueChars("aabb")
+	expected = false
+	if got != expected {
+		t.Errorf("Expected %v, got: %v", expected, got)
+	}
+}
+
 func TestSplitInTheMiddleBasic(t *testing.T) {
 	got1, got2 := SplitInTheMiddle("asdfasdf")
 	if got1 != got2 {
