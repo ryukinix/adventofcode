@@ -7,6 +7,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -32,6 +33,8 @@ type FileSystem struct {
 }
 
 const MaxSize = 100000
+const FileSystemSpace = 70000000
+const UpgradeSpaceNecessary = 30000000
 
 type ExprType int
 
@@ -135,8 +138,6 @@ func (d *Directory) calculateSizeMax(max int) int {
 	total := 0
 	for _, dir := range d.dirs {
 		if dir.size <= max {
-			fmt.Printf("dir=%s: size=%d <= %d\n", dir.name, dir.size, max)
-			fmt.Printf("total <- %d + %d\n", total, dir.size)
 			total = total + dir.size
 		}
 		total = total + dir.calculateSizeMax(max)
@@ -161,15 +162,33 @@ func (d *Directory) printDirectoryTree() {
 	}
 }
 
+func (d *Directory) collectDirsWithSizeAtLeast(minimumSize int) []*Directory {
+	dirs := []*Directory{}
+	for _, dir := range d.dirs {
+		if dir.size >= minimumSize {
+			dirs = append(dirs, dir)
+		}
+		dirs = append(dirs, dir.collectDirsWithSizeAtLeast(minimumSize)...)
+	}
+	return dirs
+}
+
 func (fs *FileSystem) resolvePart1() {
-	fs.calculateSize()
 	result := fs.calculateSizeMax(MaxSize)
 	fs.printDirectoryTree()
 	fmt.Println("Max size sum: ", result)
 }
 
 func (fs *FileSystem) resolvePart2() {
-
+	availableSpace := FileSystemSpace - fs.size
+	toBeDeleted := UpgradeSpaceNecessary - availableSpace
+	dirs := fs.collectDirsWithSizeAtLeast(toBeDeleted)
+	println("To be deleted at least: ", toBeDeleted)
+	sort.Slice(dirs, func(a, b int) bool {
+		return dirs[a].size < dirs[b].size
+	})
+	d := dirs[0]
+	fmt.Printf("Directory to be deleted: (%s, %d)", d.name, d.size)
 }
 
 func main() {
@@ -180,6 +199,7 @@ func main() {
 	commands := lerax.LoadLines(readFile)
 	fs := &FileSystem{name: "/"}
 	fs.parseDirectory(commands)
+	fs.calculateSize()
 	fs.resolvePart1()
 	fs.resolvePart2()
 }
