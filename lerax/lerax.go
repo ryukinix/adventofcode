@@ -169,3 +169,10 @@ func Intersection(s1, s2 string) string {
 func UniqueChars(s string) bool {
 	return len(s) == len(Intersection(s, s))
 }
+
+func IsInt(s string) bool {
+	if _, err := strconv.Atoi(s); err == nil {
+		return true
+	}
+	return false
+}
