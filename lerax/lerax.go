@@ -27,6 +27,18 @@ func ErrCheck(err error) {
 	}
 }
 
+// Reverse any slice producing a new one.
+//
+// ... why go doesn't have that builtin?
+func Reverse[S ~[]E, E any](slice S) []E {
+	s := make([]E, len(slice))
+	copy(s, slice)
+	for i, j := 0, len(s)-1; i < j; i, j = i+1, j-1 {
+		s[i], s[j] = s[j], s[i]
+	}
+	return s
+}
+
 // MaxArray calculate the max value of atn array (slice).
 func MaxArray[T constraints.Ordered](array []T) T {
 	var m T
@@ -134,7 +146,6 @@ func SortString(s string) string {
 }
 
 // Intersection returns the common elements of two strings.
-//
 //
 // Complexity time: O(n * log(n)) (i think)
 func Intersection(s1, s2 string) string {

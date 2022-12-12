@@ -84,3 +84,11 @@ func TestGroupLinesByWindow(t *testing.T) {
 		t.Errorf("Expected %q, got: %q", expected, got)
 	}
 }
+
+func TestReverse(t *testing.T) {
+	test := Reverse([]int{1, 2, 3})
+	expected := []int{3, 2, 1}
+	if !reflect.DeepEqual(test, expected) {
+		t.Errorf("Expected %q, got %q", expected, test)
+	}
+}
