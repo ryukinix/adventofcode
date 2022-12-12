@@ -51,6 +51,19 @@ func (t TreeContext) debug() {
 	fmt.Println("Visible: ", t.visible())
 }
 
+func (t TreeContext) scenicScore() int {
+	var score int = 1
+	for _, field := range t.fieldsOfVision {
+		for j, tree := range field {
+			if t.main <= tree || j == len(field)-1 {
+				score = score * (j + 1)
+				break
+			}
+		}
+	}
+	return score
+}
+
 func parseTrees(matrix [][]int) []TreeContext {
 	m, n := len(matrix), len(matrix[0])
 	// printMatrix(matrix)
@@ -61,10 +74,10 @@ func parseTrees(matrix [][]int) []TreeContext {
 			if main == 0 {
 				continue
 			}
-			left := matrix[i][j+1:]
-			right := matrix[i][:j]
 			column := boardColumn(matrix, j)
-			up := column[:i]
+			left := matrix[i][j+1:]
+			right := lerax.Reverse(matrix[i][:j])
+			up := lerax.Reverse(column[:i])
 			down := column[i+1:]
 			t := TreeContext{
 				main:           matrix[i][j],
@@ -98,7 +111,6 @@ func fromStringsToMatrix(rows []string) [][]int {
 func resolvePart1(matrix [][]int) {
 	tc := parseTrees(matrix)
 	count := edgeTreesNumber(matrix)
-	fmt.Println("Edge: ", count)
 	for _, t := range tc {
 		if t.visible() {
 			count = count + 1
@@ -108,7 +120,12 @@ func resolvePart1(matrix [][]int) {
 }
 
 func resolvePart2(matrix [][]int) {
-
+	tc := parseTrees(matrix)
+	scores := make([]int, len(tc))
+	for i := 0; i < len(scores); i++ {
+		scores[i] = tc[i].scenicScore()
+	}
+	fmt.Println("Solution 2: ", lerax.MaxArray(scores))
 }
 
 func main() {
