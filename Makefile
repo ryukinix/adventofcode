@@ -1,7 +1,7 @@
 GORUN = go run .
-LISPRUN = sbcl --script main.lisp
-lang := go
-year := 2022
+LISPRUN = sbcl --noinform --load $(HOME)/.sbclrc --script main.lisp
+lang := lisp
+year := 2023
 ifeq ($(lang), go)
 	COMMAND = $(GORUN)
 else ifeq ($(lang), lisp)
