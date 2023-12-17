@@ -27,15 +27,15 @@
 (defun preprocess-spelled-digits (line)
   ;; not quiet right, the substitution should be made in order
   ;; eightwothree -> 8wo3, not eigh23
-  (let ((spelled-digits '(("one" . "1")
-                          ("two" . "2")
-                          ("three" . "3")
-                          ("four" . "4")
-                          ("five" . "5")
-                          ("six" .  "6")
-                          ("seven" . "7")
-                          ("eight" . "8")
-                          ("nine" . "9"))))
+  (let ((spelled-digits '(("one" . "1e")
+                          ("two" . "2o")
+                          ("three" . "3e")
+                          ("four" . "4r")
+                          ("five" . "5e")
+                          ("six" .  "6x")
+                          ("seven" . "7n")
+                          ("eight" . "8t")
+                          ("nine" . "9e"))))
 
     (loop with line-changing = line
           with line-size = (length line)
@@ -60,7 +60,6 @@
     ;; part1
     (format t "~S~%" (resolve lines))
     ;; part2
-    (format t "~S~%" (resolve (preprocess-lines lines)))
-    ))
+    (format t "~S~%" (resolve (preprocess-lines lines)))))
 
 (main)
