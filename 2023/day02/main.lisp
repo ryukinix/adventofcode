@@ -69,26 +69,23 @@
            sum x)))
 
 (defun resolve-part2 (max-games)
-  (loop for x from 1 to (length max-games)
-        for game in max-games
+  (loop for game in max-games
         for game-values = (mapcar #'(lambda (x) (cdr x)) game)
         for power-cube = (reduce #'* game-values)
         sum power-cube))
 
 (defun main ()
-  (let ((lines (uiop:read-file-lines "input.txt")))
+  (let* ((lines (uiop:read-file-lines "input.txt"))
+         (parsed-input (mapcar (lambda (line) (reduce-max-values (parse line)))
+                               lines)))
     ;; NOTE: print the solution using lines of input.txt
-    (format t "Parsing: ")
-    (pprint (parse (car lines)))
-    (format t "~%~%Transformation max: ")
-    (pprint (reduce-max-values (parse (car lines))))
-    (format t "~%~%Part 1:  ")
-    (print (resolve-part1 (mapcar
-                           (lambda (line) (reduce-max-values (parse line)))
-                           lines)))
-    (print (resolve-part2 (mapcar
-                           (lambda (line) (reduce-max-values (parse line)))
-                           lines)))))
+    ;; (format t "Parsing: ")
+    ;; (pprint (parse (car lines)))
+    ;; (format t "~%~%Transformation max: ")
+    ;; (pprint (reduce-max-values (parse (car lines))))
+    ;; (format t "~%~%Part 1:  ")
+    (print (resolve-part1 parsed-input))
+    (print (resolve-part2 parsed-input))))
 
 (eval-when (:execute)
   (main))
