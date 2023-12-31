@@ -7,8 +7,8 @@
 
 * AdventOfCode
 
-My solutions of adventofcode written in Go, as exercise to learn the
-language starting from 2022.
+My solutions of adventofcode written in Go and Common Lisp, as
+exercise to improve knowledge of these languages.
 
 * How to run it
 
