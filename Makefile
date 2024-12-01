@@ -1,11 +1,16 @@
 GORUN = go run .
 LISPRUN = sbcl --noinform --load $(HOME)/.sbclrc --script main.lisp
-lang := lisp
-year := 2023
+SCALARUN = scala -nobootcp -nc  Main.scala
+
+lang := scala
+year := 2024
+
 ifeq ($(lang), go)
 	COMMAND = $(GORUN)
 else ifeq ($(lang), lisp)
 	COMMAND = $(LISPRUN)
+else ifeq ($(lang), scala)
+	COMMAND = $(SCALARUN)
 else
 	COMMAND = printf "language '$(lang)' not supported\n"; exit 1
 endif
