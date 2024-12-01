@@ -1,6 +1,8 @@
 GORUN = go run .
 LISPRUN = sbcl --noinform --load $(HOME)/.sbclrc --script main.lisp
-SCALARUN = scala -nobootcp -nc  Main.scala
+# For scala2.11 with java>=11, it needs the following arguments
+# SCALARUN = scala -nobootcp -nc  Main.scala
+SCALARUN = scala Main.scala
 
 lang := scala
 year := 2024
