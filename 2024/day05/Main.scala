@@ -2,35 +2,47 @@ import scala.io.Source
 import scala.annotation.tailrec
 
 case class PageData(
-  pageOrderingRules: List[(Int, Int)],
-  updatePageNumbers: List[List[Int]]
+    pageOrderingRules: List[(Int, Int)],
+    updatePageNumbers: List[List[Int]]
 )
 
-
 object Main extends App {
-  // val input = parseInput()
-  //println(inputTest())
   test1()
-  val input = parseInput()
-  val result = sumMiddleNumberOfValidPageNumbers(input)
-  println(s"part(a) | sumMiddleNumberOfValidPageNumbers: ${result}")
+  test2()
+  val input  = parseInput()
+  val partA = sumMiddleNumberOfValidPageNumbers(input)
+  val partB = sumMiddleNumberOfFixedInvalidPageNumbers(input)
+  println(s"part(a) | sumMiddleNumberOfValidPageNumbers: ${partA}")
+  println(s"part(b) | sumMiddleNumberOfFixedInvalidPageNumbers: ${partB}")
 
   @tailrec
   def checkValidPageNumbers(pageOrderingRules: List[(Int, Int)], pageNumbers: List[Int]): Boolean = {
     pageNumbers match {
       case Nil => true
       case head :: tail => {
-        tail.forall(n => pageOrderingRules.exists(p => p == (head, n))) && checkValidPageNumbers(pageOrderingRules, tail)
+        tail.forall(n => pageOrderingRules.exists(p => p == (head, n))) && checkValidPageNumbers(
+          pageOrderingRules,
+          tail
+        )
       }
     }
   }
 
   def sumMiddleNumberOfValidPageNumbers(pageData: PageData): Int = {
-    pageData.updatePageNumbers
-      .filter {
-        pageNumbers => checkValidPageNumbers(pageData.pageOrderingRules, pageNumbers)
-      }.map {
-        pageNumbers => pageNumbers(pageNumbers.size / 2)
+    pageData.updatePageNumbers.filter { pageNumbers =>
+      checkValidPageNumbers(pageData.pageOrderingRules, pageNumbers)
+    }.map { pageNumbers =>
+      pageNumbers(pageNumbers.size / 2)
+    }.sum()
+  }
+
+  def sumMiddleNumberOfFixedInvalidPageNumbers(pageData: PageData): Int = {
+    pageData.updatePageNumbers.filter { pageNumbers =>
+      !checkValidPageNumbers(pageData.pageOrderingRules, pageNumbers)
+    }.map { pageNumbers =>
+      pageNumbers.sortWith((a, b) => pageData.pageOrderingRules.contains(a, b))
+    }.map { pageNumbers =>
+      pageNumbers(pageNumbers.size / 2)
     }.sum()
   }
 
@@ -40,7 +52,7 @@ object Main extends App {
   }
 
   def parseLines(lines: List[String]): PageData = {
-    val endLineIndex = lines.indexOf("")
+    val endLineIndex                  = lines.indexOf("")
     val (firstSection, secondSection) = lines.splitAt(endLineIndex)
     val pageOrderingRules = firstSection.map { line =>
       line.split('|') match {
@@ -59,6 +71,13 @@ object Main extends App {
     val testResult     = sumMiddleNumberOfValidPageNumbers(inputTest())
     val status         = if (testResult == expectedResult) "passed" else "failed"
     println(s"test1[${status}]: got ${testResult}, expected ${expectedResult}")
+  }
+
+  def test2() = {
+    val expectedResult = 123
+    val testResult     = sumMiddleNumberOfFixedInvalidPageNumbers(inputTest())
+    val status         = if (testResult == expectedResult) "passed" else "failed"
+    println(s"test2[${status}]: got ${testResult}, expected ${expectedResult}")
   }
 
   def inputTest(): PageData = {
