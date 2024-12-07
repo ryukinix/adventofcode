@@ -9,10 +9,10 @@ case class CalibrationEquation(
 object Main extends App {
   test1()
   test2()
-  val partA = sumOfValidEquations(parseInput())
-  val partB = sumOfValidEquationsWithConcat(parseInput())
+  val partA = sumOfValidEquations(input())
+  val partB = sumOfValidEquationsWithConcat(input())
   println(s"part(a) | sumOfValidEquations: ${partA}")
-  println(s"part(b) | sumOfValidEquations: ${partB}")
+  println(s"part(b) | sumOfValidEquationsWithConcat: ${partB}")
 
   def sumOfValidEquations(equations: List[CalibrationEquation]): Long = {
     equations
@@ -46,7 +46,7 @@ object Main extends App {
       values: List[Long],
       ops: List[(Long, Long) => Long] = List(addExact, multiplyExact)
   ): List[Long] = {
-    val n         = values.length - 1
+    val n            = values.length - 1
     val permutations = permutationsWithRepetition(ops.indices.toList, n).map(0 :: _)
     permutations.map { c =>
       values.zipWithIndex.foldLeft(0.toLong) { case (acc, (x, i)) =>
@@ -80,10 +80,6 @@ object Main extends App {
     println(s"test2[${status}]: got ${testResult}, expected ${expectedResult}")
   }
 
-  def parseInput(): List[CalibrationEquation] = {
-    input().map(parseCalibrationEquation)
-  }
-
   def parseCalibrationEquation(line: String): CalibrationEquation = {
     line.split(":") match {
       case Array(result, numbers) =>
@@ -95,9 +91,9 @@ object Main extends App {
     }
   }
 
-  def input(): List[String] = {
+  def input(): List[CalibrationEquation] = {
     val fileName = "input.txt"
-    Source.fromFile(fileName).getLines().toList
+    Source.fromFile(fileName).getLines().toList.map(parseCalibrationEquation)
   }
 
   def inputTest(): List[CalibrationEquation] = {
