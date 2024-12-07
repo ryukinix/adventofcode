@@ -5,8 +5,11 @@ LISPRUN = sbcl --noinform --load $(HOME)/.sbclrc --script main.lisp
 SCALARUN = scala Main.scala
 PYTHONRUN = python main.py
 
+
+benchmark := no
 lang := scala
 year := 2024
+
 
 ifeq ($(lang), go)
 	COMMAND = $(GORUN)
@@ -17,8 +20,17 @@ else ifeq ($(lang), scala)
 else ifeq ($(lang), python)
 	COMMAND = $(PYTHONRUN)
 else
-	COMMAND = printf "language '$(lang)' not supported\n"; exit 1
+	printf "language '$(lang)' not supported\n"; exit 1
 endif
+
+ifeq ($(benchmark), yes)
+	COMMAND := time $(COMMAND)
+else ifeq ($(benchmark), time)
+	COMMAND := time $(COMMAND)
+else ifeq ($(benchmark), hyperfine)
+	COMMAND := hyperfine --warmup 1 "$(COMMAND)"
+endif
+
 
 day%:
 	@echo "[$(lang)] Solution for $@ challenge: "
