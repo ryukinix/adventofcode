@@ -1,13 +1,29 @@
 import scala.io.Source
+import scala.collection.mutable.HashMap
 
 class Guard(var point: (Int, Int), var direction: (Int, Int)) {
+  final val UP    = (-1, 0)
+  final val RIGHT = (0, 1)
+  final val LEFT  = (0, -1)
+  final val DOWN  = (1, 0)
+
   def rotateDirection(): Unit = {
     this.direction = this.direction match {
-      case (1, 0)  => (0, -1)
-      case (0, -1) => (-1, 0)
-      case (-1, 0) => (0, 1)
-      case (0, 1)  => (1, 0)
-      case _       => this.direction
+      case UP    => RIGHT
+      case RIGHT => DOWN
+      case LEFT  => UP
+      case DOWN  => LEFT
+      case _     => this.direction
+    }
+  }
+
+  def directionChar(): Char = {
+    this.direction match {
+      case UP    => '^'
+      case RIGHT => '>'
+      case LEFT  => '<'
+      case DOWN  => 'v'
+      case _     => '.'
     }
   }
 
@@ -29,14 +45,36 @@ class Guard(var point: (Int, Int), var direction: (Int, Int)) {
 }
 
 object Main extends App {
-  inputTest().map(println)
   println(matrix2String(generateGuardPathMap(inputTest())))
   test1()
+  test2()
   val partA = countDistinctPointsGuardPathMap(parseInput())
+  val partB = countObstaclesThatGeneratesLoops(parseInput())
   println(s"part(a) | ${partA}")
+  println(s"part(b) | ${partB}")
 
-  def countDistinctPointsGuardPathMap(matrix: Array[String]): Int = {
+  def countDistinctPointsGuardPathMap(matrix: Array[Array[Char]]): Int = {
     generateGuardPathMap(matrix).flatten.sum()
+  }
+
+  def countObstaclesThatGeneratesLoops(matrix: Array[Array[Char]]): Int = {
+    val guard   = initGuard(matrix)
+    val pathMap = generateGuardPathMap(matrix)
+    val indices: Seq[(Int, Int)] = for {
+      rowIndex <- pathMap.indices
+      colIndex <- pathMap(rowIndex).indices
+      if (rowIndex, colIndex) != guard.point
+    } yield (rowIndex, colIndex)
+
+    indices.filter { case (x, y) =>
+      pathMap(x)(y) == 1
+    }.count(checkLoopByInsertingObstacleAtPoint(matrix.map(_.clone), _))
+  }
+
+  def checkLoopByInsertingObstacleAtPoint(matrix: Array[Array[Char]], point: (Int, Int)): Boolean = {
+    val (px, py) = point
+    matrix(px)(py) = '#'
+    checkGuardPathLoop(matrix)
   }
 
   def test1() = {
@@ -46,11 +84,18 @@ object Main extends App {
     println(s"test1[${status}]: got ${testResult}, expected ${expectedResult}")
   }
 
-  def generateGuardPathMap(matrix: Array[String]): Array[Array[Int]] = {
+  def test2() = {
+    val expectedResult = 6
+    val testResult     = countObstaclesThatGeneratesLoops(inputTest())
+    val status         = if (testResult == expectedResult) "passed" else "failed"
+    println(s"test2[${status}]: got ${testResult}, expected ${expectedResult}")
+  }
+
+  def generateGuardPathMap(matrix: Array[Array[Char]]): Array[Array[Int]] = {
     val guard: Guard = initGuard(matrix)
     val (rows, cols) = (matrix.size, matrix(0).size)
-    val pathMap = Array.ofDim[Int](rows, cols)
-    var walkPointer = safeAccess(matrix, guard.point)
+    val pathMap      = Array.ofDim[Int](rows, cols)
+    var walkPointer  = safeAccess(matrix, guard.point)
     while (walkPointer != None) {
       val (px, py) = guard.point
       pathMap(px)(py) = 1
@@ -68,7 +113,40 @@ object Main extends App {
     pathMap
   }
 
-  def initGuard(matrix: Array[String]): Guard = {
+  def checkGuardPathLoop(matrix: Array[Array[Char]]): Boolean = {
+    val walkMemory: HashMap[(Int, Int), Array[Char]] = HashMap()
+    val guard: Guard                                 = initGuard(matrix)
+    var walkPointer                                  = safeAccess(matrix, guard.point)
+    while (walkPointer != None) {
+      walkPointer = safeAccess(matrix, guard.nextPoint())
+      walkPointer match {
+        case Some('#') => {
+          val directionChar = guard.directionChar()
+          walkMemory.get(guard.point) match {
+            case Some(points) => {
+              if (points.contains(directionChar)) {
+                return true
+              } else {
+                walkMemory.put(guard.point, points :+ directionChar)
+              }
+            }
+            case None => {
+              walkMemory.put(guard.point, Array(directionChar))
+            }
+          }
+          guard.rotateDirection()
+          guard.step()
+        }
+        case otherwise => {
+          guard.step()
+        }
+      }
+    }
+    // println(matrix2String(matrix))
+    return false
+  }
+
+  def initGuard(matrix: Array[Array[Char]]): Guard = {
     val indices: Seq[(Int, Int)] = for {
       rowIndex <- matrix.indices
       colIndex <- matrix(rowIndex).indices
@@ -83,12 +161,12 @@ object Main extends App {
     )
   }
 
-  def parseInput(): Array[String] = {
+  def parseInput(): Array[Array[Char]] = {
     val fileName = "input.txt"
-    Source.fromFile(fileName).getLines().toArray()
+    Source.fromFile(fileName).getLines().toArray().map(_.toArray)
   }
 
-  def safeAccess(matrix: Array[String], point: (Int, Int)): Option[Char] = {
+  def safeAccess(matrix: Array[Array[Char]], point: (Int, Int)): Option[Char] = {
     val (line, char) = point
     matrix.lift(line) match {
       case Some(x) => x.lift(char)
@@ -96,7 +174,7 @@ object Main extends App {
     }
   }
 
-  def inputTest(): Array[String] = {
+  def inputTest(): Array[Array[Char]] = {
     """....#.....
       |.........#
       |..........
@@ -106,7 +184,7 @@ object Main extends App {
       |.#..^.....
       |........#.
       |#.........
-      |......#...""".stripMargin.split("\n")
+      |......#...""".stripMargin.split("\n").map(_.toArray)
   }
 
   def matrix2String[T](matrix: Array[Array[T]]): String =
