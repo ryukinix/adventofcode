@@ -103,7 +103,6 @@ object Main extends App {
       walkPointer match {
         case Some('#') => {
           guard.rotateDirection()
-          guard.step()
         }
         case otherwise => {
           guard.step()
@@ -135,7 +134,6 @@ object Main extends App {
             }
           }
           guard.rotateDirection()
-          guard.step()
         }
         case otherwise => {
           guard.step()
