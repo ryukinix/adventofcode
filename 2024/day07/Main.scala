@@ -1,20 +1,29 @@
 import scala.io.Source
 import scala.math.{addExact, multiplyExact, pow}
 
-
 case class CalibrationEquation(
-  result: Long,
-  values: List[Long]
+    result: Long,
+    values: List[Long]
 )
 
 object Main extends App {
   test1()
+  test2()
   val partA = sumOfValidEquations(parseInput())
+  val partB = sumOfValidEquationsWithConcat(parseInput())
   println(s"part(a) | sumOfValidEquations: ${partA}")
+  println(s"part(b) | sumOfValidEquations: ${partB}")
 
   def sumOfValidEquations(equations: List[CalibrationEquation]): Long = {
     equations
       .filter(checkValidEquation)
+      .map(_.result)
+      .sum()
+  }
+
+  def sumOfValidEquationsWithConcat(equations: List[CalibrationEquation]): Long = {
+    equations
+      .filter(checkValidEquationWithConcat)
       .map(_.result)
       .sum()
   }
@@ -24,30 +33,37 @@ object Main extends App {
       .exists(_ == equation.result)
   }
 
-  def generateEquationsResults(values: List[Long]): List[Long] = {
-    val ops: List[(Long, Long) => Long] = List(addExact, multiplyExact)
-    val n = values.length - 1
-    val maxBinary = (pow(2, n))
-    val combinations = (0 until maxBinary.toInt).map { k =>
-      0 :: integerToBinaryWithLeadingZeros(k, n) //.map(ops(_))
-    }
-    combinations.map { c =>
-      values.zipWithIndex.foldLeft(c.head.toLong) {
-        case (acc, (x, i)) => ops(c(i))(acc, x)
+  def checkValidEquationWithConcat(equation: CalibrationEquation): Boolean = {
+    generateEquationsResults(equation.values, List(addExact, multiplyExact, concat))
+      .exists(_ == equation.result)
+  }
+
+  def concat(a: Long, b: Long): Long = {
+    (a.toString() + b.toString).toLong
+  }
+
+  def generateEquationsResults(
+      values: List[Long],
+      ops: List[(Long, Long) => Long] = List(addExact, multiplyExact)
+  ): List[Long] = {
+    val n         = values.length - 1
+    val permutations = permutationsWithRepetition(ops.indices.toList, n).map(0 :: _)
+    permutations.map { c =>
+      values.zipWithIndex.foldLeft(0.toLong) { case (acc, (x, i)) =>
+        ops(c(i))(acc, x)
       }
     }.toList
   }
 
-  def integerToBinaryWithLeadingZeros(number: Int, length: Int): List[Int] = {
-    // Convert the number to a binary string
-    val binaryString = number.toBinaryString
-
-    // Calculate the number of leading zeros needed
-    val leadingZeros = length - binaryString.length
-
-    // Create a formatted string with leading zeros
-    val formattedBinaryString = "0" * leadingZeros + binaryString
-    formattedBinaryString.map(_.asDigit).toList
+  def permutationsWithRepetition[T](list: List[T], length: Int): List[List[T]] = {
+    if (length == 0) {
+      List(Nil)
+    } else {
+      for {
+        element <- list
+        perm    <- permutationsWithRepetition(list, length - 1)
+      } yield element :: perm
+    }
   }
 
   def test1() = {
@@ -57,16 +73,24 @@ object Main extends App {
     println(s"test1[${status}]: got ${testResult}, expected ${expectedResult}")
   }
 
+  def test2() = {
+    val expectedResult = 11387
+    val testResult     = sumOfValidEquationsWithConcat(inputTest())
+    val status         = if (testResult == expectedResult) "passed" else "failed"
+    println(s"test2[${status}]: got ${testResult}, expected ${expectedResult}")
+  }
+
   def parseInput(): List[CalibrationEquation] = {
     input().map(parseCalibrationEquation)
   }
 
   def parseCalibrationEquation(line: String): CalibrationEquation = {
     line.split(":") match {
-      case Array(result, numbers) => CalibrationEquation(
-        result = result.toLong,
-        values = numbers.strip().split(" ").map(_.toLong).toList
-      )
+      case Array(result, numbers) =>
+        CalibrationEquation(
+          result = result.toLong,
+          values = numbers.strip().split(" ").map(_.toLong).toList
+        )
       case x => throw new Exception(s"parseCalibrationEquation: failed to parse: {x}")
     }
   }
