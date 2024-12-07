@@ -22,7 +22,7 @@ endif
 
 day%:
 	@echo "[$(lang)] Solution for $@ challenge: "
-	@cd $(year)/$@; $(COMMAND)
+	@cd $(year)/$@; time $(COMMAND)
 
 check:
 	go test -v ./...
