@@ -121,17 +121,20 @@ object Main extends App {
       walkPointer match {
         case Some('#') => {
           val directionChar = guard.directionChar()
+          // stop if loop is detected
           walkMemory.get(guard.point) match {
             case Some(points) => {
               if (points.contains(directionChar)) {
                 return true
-              } else {
-                walkMemory.put(guard.point, points :+ directionChar)
               }
             }
-            case None => {
-              walkMemory.put(guard.point, Array(directionChar))
-            }
+            case None =>
+          }
+
+          // update walk
+          walkMemory.updateWith(guard.point) {
+            case Some(points) => Some(points :+ directionChar)
+            case None =>  Some(Array(directionChar))
           }
           guard.rotateDirection()
         }
