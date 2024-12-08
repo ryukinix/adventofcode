@@ -1,5 +1,5 @@
 import scala.collection.mutable.HashMap
-import scala.math.{pow, sqrt}
+import scala.math.{pow, sqrt, abs}
 import scala.io.Source
 
 type Point = (Int, Int)
@@ -7,13 +7,26 @@ type Point = (Int, Int)
 object Main extends App {
   println(generateHashMapOfAntennas(inputTest()))
   test1()
+  test2()
   val partA = countAntiNodes(input())
+  val partB = countAntiNodesExtensive(input())
   println(s"part(a) | countAntiNodes: ${partA}")
+  println(s"part(b) | countAntiNodes: ${partB}")
 
   def countAntiNodes(matrix: Array[Array[Char]]): Int = {
     val mapOfAntennas = generateHashMapOfAntennas(matrix)
     mapOfAntennas.values
       .map(generateAntiNodes)
+      .flatten()
+      .toSet
+      .count(checkValidAntiNode(matrix, _))
+  }
+
+  def countAntiNodesExtensive(matrix: Array[Array[Char]]): Int = {
+    val mapOfAntennas = generateHashMapOfAntennas(matrix)
+    val limits = (matrix.size, matrix(0).size)
+    mapOfAntennas.values
+      .map(generateAntiNodesExtensive(_, limits))
       .flatten()
       .toSet
       .count(checkValidAntiNode(matrix, _))
@@ -37,6 +50,29 @@ object Main extends App {
     val (x2, y2) = p2
     val (dx, dy) = (x2 - x1, y2 - y1)
     (x1 - dx, y1 - dy)
+  }
+
+  def generateAntiNodesExtensive(points: Set[Point], limits: Point): Set[Point] = {
+      points.flatMap { p1 =>
+        (points - p1).map(p2 => generateAntiNodeExtensive(p1, p2, limits)).flatten()
+      }
+    }
+
+  def generateAntiNodeExtensive(p1: Point, p2: Point, limits: Point): Set[Point] = {
+    val (x1, y1) = p1
+    val (x2, y2) = p2
+    val (dx, dy) = (x2 - x1, y2 - y1)
+    val (xMax, _) = limits
+    val right = (x1 to xMax by abs(dx)).zipWithIndex.map {
+      case (v, i) => (i * dx, i * dy)
+    }.toSet
+    val left = (x1 to 0 by -abs(dx)).zipWithIndex.map {
+      case (v, i) => (- i * dx, - i * dy)
+    }.toSet
+
+    (right ++ left).map {
+      case (dx, dy) => (x1 + dx, y1 + dy)
+    }
   }
 
   def generateHashMapOfAntennas(matrix: Array[Array[Char]]): HashMap[Char, Set[Point]] = {
@@ -78,6 +114,13 @@ object Main extends App {
     val testResult     = countAntiNodes(inputTest())
     val status         = if (testResult == expectedResult) "passed" else "failed"
     println(s"test1[${status}]: got ${testResult}, expected ${expectedResult}")
+  }
+
+  def test2() = {
+    val expectedResult = 34
+    val testResult     = countAntiNodesExtensive(inputTest())
+    val status         = if (testResult == expectedResult) "passed" else "failed"
+    println(s"test2[${status}]: got ${testResult}, expected ${expectedResult}")
   }
 
   def inputTest(): Array[Array[Char]] = {
