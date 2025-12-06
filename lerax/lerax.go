@@ -7,7 +7,6 @@ package lerax
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
@@ -104,7 +103,7 @@ func LoadLines(readFile *os.File) []string {
 }
 
 func ReadFileText(inputFile string) string {
-	file, err := ioutil.ReadFile(inputFile)
+	file, err := os.ReadFile(inputFile)
 	if err != nil {
 		fmt.Printf("Could not read the file due to this %s error \n", err)
 	}

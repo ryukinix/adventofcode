@@ -33,19 +33,23 @@
         :do (setq p (rotate (parse-rotation rot-string) p))
         :collect p))
 
-(defun run-test ()
+(defun run-tests ()
   (let* ((rot-strings (mapcar 'car *test-input*))
          (expected (mapcar 'cdr *test-input*))
-         (rotations (apply-rotation rot-strings *pointer*)))
-    (loop :for rotation in rotations
-          :for rotation-expected in expected
-          :always (= rotation rotation-expected))))
+         (rotations (apply-rotation rot-strings *pointer*))
+         (check-rotations (loop :for rotation in rotations
+                                :for rotation-expected in expected
+                                :always (= rotation rotation-expected)))
+         (check-count (eq (count 0 rotations) 3)))
+    (assert check-rotations)
+    (assert check-count)))
 
 (defun solve-part-a (lines)
   (let ((zeros (count 0 (apply-rotation lines *pointer*))))
     (format t "Part A: ~a" zeros)))
 
 (defun main ()
+  (run-tests)
   (let* ((lines (uiop:read-file-lines "input.txt")))
     (solve-part-a lines)))
 
