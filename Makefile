@@ -7,8 +7,8 @@ PYTHONRUN = python main.py
 
 
 benchmark := no
-lang := scala
-year := 2024
+lang := lisp
+year := 2025
 
 
 ifeq ($(lang), go)
