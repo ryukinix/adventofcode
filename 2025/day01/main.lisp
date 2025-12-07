@@ -28,13 +28,10 @@
 
 (defun rotate (rotation pointer)
   (let ((r (+ rotation pointer)))
-    (cond
-      ((< r 0) (values (mod (+ r 100) 100)
-                       (+ (if (> pointer 0) 1 0)
-                          (truncate (abs (+ r 100)) 100))))
-      ((>= r 100) (values (mod r 100)
-                          (truncate r 100)))
-      (t (values r (if (eq r 0) 1 0))))))
+    (values (mod r 100)
+            (if (>= rotation 0)
+                (- (floor r 100) (floor pointer 100))
+                (- (floor (1- pointer) 100) (floor (1- r) 100))))))
 
 (defun apply-rotation (rot-strings initial-position)
   (loop :with p = initial-position
@@ -69,9 +66,7 @@
     (assert check-rotations (rotations) "Rotations: ~a" rotations)
     (assert (eq count-zeros 3) (count-zeros) "Expected 3 zeros, but found ~a" count-zeros)
     (assert (eq interlap-zeros 6) (interlap-zeros) "Expected 6 interlap-zeros, but found ~a" interlap-zeros)
-    ;(assert (eq extra-test 4) (extra-test) "Expected 4 in extra-test, but found ~a" extra-test)
-    )
-  )
+    (assert (eq extra-test 4) (extra-test) "Expected 4 in extra-test, but found ~a" extra-test)))
 
 (defun solve-part-a (lines)
   (let ((zeros (count 0 (apply-rotation lines *pointer*))))
